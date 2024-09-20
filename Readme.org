@@ -1,0 +1,75 @@
+#+title: Data project for dna
+
+- Version: "0.0.1"
+
+* To download data
+
+#+begin_src sh :results output :exports both
+rclone --drive-shared-with-me sync --copy-links --progress --exclude *.lifext gdpa:iClima\ 1Photon data/
+#+end_src
+
+
+* New cloning
+
+#+begin_src sh :results output :exports both
+git clone git@gin.g-node.org:/darosio/dna.git
+cd ./dna
+git annex init $HOSTNAME`
+git config annex.sshcaching true
+git config annex.backends MD5
+#+end_src
+
+** Initial project setup
+- [X] Create a new (empty) repo https://gin.g-node.org/repo/create and run:
+#+begin_src
+git init
+git remote add origin git@gin.g-node.org:/darosio/dna.git
+git add .
+git commit -m "init"
+git push --set-upstream origin main
+git annex init "$HOSTNAME"
+git config annex.sshcaching true
+git config annex.backends MD5
+#+end_src
+- [ ] Edit .gitignore
+#+begin_src
+direnv allow
+hatch env create
+hatch run lint
+hatch run init
+
+git annex add data/
+git annex sync
+#+end_src
+
+*** Notes
+- Double check .pre-commit-config.yaml do not push id: commitizen-branch
+- Alternatively create repository using `gin`:
+#+begin_src
+gin create --no-clone <NAME> <"DESCRIPTION">
+#+end_src
+- As alternative to hatch use pyenv or even python:
+#+begin_src
+echo "layout pyenv" > .envrc`
+or:
+echo "layout python" > .envrc`
+#+end_src
+
+** Use
+`git annex sync` instead of pushing after committing notable changes.
+
+** CLI installation
+
+To enable auto completion for the `cli` command, follow these steps:
+
+1.  Generate the completion script by running the following command:
+
+#+begin_src sh :results output :exports both
+_DNA_COMPLETE=bash_source dna > ~/.local/bin/dna-complete.bash
+#+end_src
+
+2.  Source the generated completion script to enable auto completion:
+
+#+begin_src sh :results output :exports both
+source ~/.local/bin/dna-complete.bash
+#+end_src
